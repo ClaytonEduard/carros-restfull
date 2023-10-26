@@ -13,6 +13,11 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 
 import br.com.livro.domain.Carro;
 import br.com.livro.domain.ListaCarros;
@@ -43,6 +48,22 @@ public class JAXBUtil {
 			String xml = writer.toString();
 			return xml;
 		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static String toJSON(Object object) throws IOException {
+		try {
+			StringWriter writer = new StringWriter();
+			Marshaller m = context.createMarshaller();
+			MappedNamespaceConvention con = new MappedNamespaceConvention();
+			XMLStreamWriter xmlSreamWriter = new MappedXMLStreamWriter(con, writer);
+			m.marshal(object, xmlSreamWriter);
+			String json = writer.toString();
+			return json;
+
+		} catch (JAXBException e) {
 			e.printStackTrace();
 			return null;
 		}

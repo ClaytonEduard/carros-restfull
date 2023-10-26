@@ -28,10 +28,16 @@ public class CarrosServlet extends HttpServlet {
 		ListaCarros lista = new ListaCarros();
 		lista.setCarros(carros);
 		//Gerar o XML
-		JAXBUtil j = new JAXBUtil();
+		/*JAXBUtil j = new JAXBUtil();
 		String xml = j.toXML(lista);
 		//Escreve o XML na response do Servlet com a APPLICATION/XML
-		ServletUtil.writeXML(resp, xml);
+		ServletUtil.writeXML(resp, xml);*/
+		
+		// usando o Jettison
+		//Gera o JSON
+		String json = JAXBUtil.toJSON(lista);
+		///Escreve o XML na response do Servlet com a APPLICATION/XML
+		ServletUtil.writeJSON(resp, json);
 	}
 
 }
