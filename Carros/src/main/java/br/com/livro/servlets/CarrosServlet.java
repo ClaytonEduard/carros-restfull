@@ -16,6 +16,7 @@ import br.com.livro.domain.Carro;
 import br.com.livro.domain.CarroService;
 import br.com.livro.domain.ListaCarros;
 import br.com.livro.util.JAXBUtil;
+import br.com.livro.util.RegexUtil;
 import br.com.livro.util.ServletUtil;
 
 @WebServlet("/carros/*")
@@ -26,27 +27,29 @@ public class CarrosServlet extends HttpServlet {
 	@SuppressWarnings("static-access")
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		List<Carro> carros = carroService.getCarros();
-		ListaCarros lista = new ListaCarros();
-		lista.setCarros(carros);
-		// Gerar o XML
-		/*
-		 * JAXBUtil j = new JAXBUtil(); String xml = j.toXML(lista); //Escreve o XML na
-		 * response do Servlet com a APPLICATION/XML ServletUtil.writeXML(resp, xml);
-		 */
 
-		// usando o Jettison
-		// Gera o JSON
-		/*
-		 * String json = JAXBUtil.toJSON(lista); ///Escreve o XML na response do Servlet
-		 * com a APPLICATION/XML ServletUtil.writeJSON(resp, json);
-		 */
+		String requestUri = req.getRequestURI();
+		Long id = RegexUtil.matchId(requestUri);
+		if (id != null) {
+			// informou o id
+			Carro carro = carroService.getCarro(id);
+			if (carro != null) {
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				String json = gson.toJson(carro);
+				ServletUtil.writeJSON(resp, json);
+			} else {
+				resp.sendError(404, "Carro não encontrado");
+			}
+		} else {
+			// LISTA de carros
+			List<Carro> carros = carroService.getCarros();
+			// Usando o JSON
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(carros);
+			/// Escreve o XML na response do Servlet com a APPLICATION/XML
+			ServletUtil.writeJSON(resp, json);
+		}
 
-		// Usando o JSON
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(lista);
-		/// Escreve o XML na response do Servlet com a APPLICATION/XML
-		ServletUtil.writeJSON(resp, json);
 	}
 
 }
