@@ -14,8 +14,7 @@ import com.google.gson.GsonBuilder;
 
 import br.com.livro.domain.Carro;
 import br.com.livro.domain.CarroService;
-import br.com.livro.domain.ListaCarros;
-import br.com.livro.util.JAXBUtil;
+import br.com.livro.domain.Response;
 import br.com.livro.util.RegexUtil;
 import br.com.livro.util.ServletUtil;
 
@@ -88,7 +87,11 @@ public class CarrosServlet extends HttpServlet {
 		Long id = RegexUtil.matchId(requestUri);
 		if (id != null) {
 			carroService.delete(id);
-			resp.sendError(200, "Carro excluído com sucesso");
+			//resp.sendError(200, "Carro excluído com sucesso");
+			Response r = Response.OK("Carro excluído com sucesso");
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(r);
+			ServletUtil.writeJSON(resp, json);
 		}else {
 			// Url inválida
 			resp.sendError(404, "URL inválida");
