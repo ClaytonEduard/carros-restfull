@@ -18,7 +18,7 @@ import javax.ws.rs.core.Application;
 import org.glassfish.jersey.jettison.JettisonFeature;
 
 public class MyApplication extends Application {
-
+	@Override
 	public Set<Object> getSingletons() {
 		Set<Object> singletons = new HashSet<>();
 		// Driver do Jettion para gerar o Json
