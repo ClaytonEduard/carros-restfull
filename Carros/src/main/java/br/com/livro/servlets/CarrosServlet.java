@@ -24,7 +24,37 @@ public class CarrosServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CarroService carroService = new CarroService();
 
-	@SuppressWarnings("static-access")
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// cria o carro
+		Carro carro = getCarroFromRequest(req);
+		// salva o carro
+		carroService.save(carro);
+		// escreve o Json do novo carro salvo
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(carro);
+		ServletUtil.writeJSON(resp, json);
+	}
+
+	// Lê os parametros da request e cria o objeto carro
+	private Carro getCarroFromRequest(HttpServletRequest request) {
+		Carro c = new Carro();
+		String id = request.getParameter("id");
+		if (id != null) {
+			// se informou o id, busca o objeto do banco
+			c = carroService.getCarro(Long.parseLong(id));
+		}
+		c.setNome(request.getParameter("nome"));
+		c.setDesc(request.getParameter("descricao"));
+		c.setUrlFoto(request.getParameter("url_foto"));
+		c.setUrlVideo(request.getParameter("url_video"));
+		c.setLatitude(request.getParameter("latitude"));
+		c.setLongitude(request.getParameter("longitude"));
+		c.setTipo(request.getParameter("tipo"));
+
+		return c;
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -50,6 +80,20 @@ public class CarrosServlet extends HttpServlet {
 			ServletUtil.writeJSON(resp, json);
 		}
 
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String requestUri = req.getRequestURI();
+		Long id = RegexUtil.matchId(requestUri);
+		if (id != null) {
+			carroService.delete(id);
+			resp.sendError(200, "Carro excluído com sucesso");
+		}else {
+			// Url inválida
+			resp.sendError(404, "URL inválida");
+		}
+		
 	}
 
 }
