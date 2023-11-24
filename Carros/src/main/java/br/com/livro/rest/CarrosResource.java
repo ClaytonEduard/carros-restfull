@@ -26,17 +26,11 @@ import br.com.livro.domain.Response;
 
 @Path("/carros")
 @Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
-@Consumes(MediaType.APPLICATION_JSON+";charset=utf-8")
+@Consumes(MediaType.APPLICATION_JSON+";charset=utf-8")  
 public class CarrosResource {
 
 	private CarroService carroService = new CarroService();
-
 	
-	
-	
-	public CarrosResource() {
-	}
-
 	@GET
 	public List<Carro> get() {
 		List<Carro> carros = carroService.getCarros();
